@@ -10,13 +10,29 @@ list.files("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline")
 baseline<- read.csv("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline/25CA004_UdeM_AJTessier_Baseline_CoPv7-1_Qx_PA_BS.csv")
 View(baseline)
 #–––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
 # ethnicity
 baseline$ethnicity <- if_else(
-  SDC_ETHN_ZH_COM == 1 |
-    SDC_ETHN_SA_COM == 1 |
-    SDC_ETHN_HE_COM == 1,
+  baseline$SDC_ETHN_ZH_COM == 1 |
+    baseline$SDC_ETHN_SA_COM == 1 |
+    baseline$SDC_ETHN_HE_COM == 1,
   "Non-European",
   "European"
+)
+
+# alcool (nb de verres par semaine)
+baseline$alcool <- with(
+  baseline,
+  ALC_RDWD_NB_COM +
+    ALC_WHWD_NB_COM +
+    ALC_BRWD_NB_COM +
+    ALC_LQWD_NB_COM +
+    ALC_OTWD_NB_COM +
+    ALC_RDWE_NB_COM +
+    ALC_WHWE_NB_COM +
+    ALC_BRWE_NB_COM +
+    ALC_LQWE_NB_COM +
+    ALC_OTWE_NB_COM
 )
 
 #–––––––––––––––––––––––––––––––––––––––––––––––––––––––
