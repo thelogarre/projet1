@@ -9,7 +9,17 @@
 list.files("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline")
 baseline<- read.csv("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline/25CA004_UdeM_AJTessier_Baseline_CoPv7-1_Qx_PA_BS.csv")
 View(baseline)
+#–––––––––––––––––––––––––––––––––––––––––––––––––––––––
+# ethnicity
+baseline$ethnicity <- if_else(
+  SDC_ETHN_ZH_COM == 1 |
+    SDC_ETHN_SA_COM == 1 |
+    SDC_ETHN_HE_COM == 1,
+  "Non-European",
+  "European"
+)
 
+#–––––––––––––––––––––––––––––––––––––––––––––––––––––––
 #### Faire la table 1 ####
 # 1. Installer et charger tableone (si pas encore fait)
 install.packages("tableone")
@@ -24,21 +34,26 @@ variables_interet <-
     "INC_TOT_COM",
     "HWT_DBMI_COM",
     "WHC_WAIST_CM_COM",
+    "DXA_TOTAL_MASS_COM",
+    "DXA_TOTAL_FAT_MASS_COM",
     "DXA_TOTAL_FAT_PERCENT_COM",
     "DXA_APPENDAGE_LEAN_MASS_COM",
     "DXA_APPEND_LEAN_MASS_H2_COM",
+    "DXA_TOTAL_LEAN_MASS_COM",
     "GS_EXAM_MAX_COM",
     "WLK_TIME_COM",
     "TUG_TIME_COM",
     "CR_TIME_COM",
-    "BAL_BEST_COM"
+    "BAL_BEST_COM",
+    "ICQ_SMOKE_COM",
+    "etnicity"
   )
 
 # 3. Préciser quelles variables sont catégorielles
-vars_cat <- c("SEX_ASK_COM", "ED_HIGH_COM", "INC_TOT_COM")
+vars_cat <- c("SEX_ASK_COM", "ED_HIGH_COM", "INC_TOT_COM", "etnicity")
 
-
-###########
+#–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+#### création des groupes ####
 # 1. Création des indicateurs de base selon le sexe
 baseline$sarcopenic_ind <- with(baseline, ifelse(
   (SEX_ASK_COM == "Male" & DXA_APPEND_LEAN_MASS_H2_COM < 7.76) | 
@@ -75,13 +90,8 @@ baseline$groups <- as.factor(baseline$groups)
 
 # 3. Vérification des effectifs par groupe
 table(baseline$groups, useNA = "always")
+#–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
-
-
-
-
-
-##############
 # 4. Créer la table descriptive globale et par groupe
 tableau1 <- CreateTableOne(vars = variables_interet, 
                            strata = "groups", 
