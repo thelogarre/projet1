@@ -5,5 +5,3 @@
 #git commit -m "Mise à jour du script : ajout de graphiques ou filtres"
 #git push
 
-
-
