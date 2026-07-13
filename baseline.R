@@ -13,7 +13,7 @@ View(baseline)
 #### Faire la table 1 ####
 # 1. Installer et charger tableone (si pas encore fait)
 install.packages("tableone")
-library("tableone")
+library(tableone)
 
 # 2. Lister vos variables d'intérêt (remplacez avec les vrais codes du dictionnaire)
 variables_interet <-
