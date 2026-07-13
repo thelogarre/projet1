@@ -12,7 +12,7 @@ View(baseline)
 #–––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
 # ethnicity
-baseline$ethnicity <- if_else(
+baseline$ethnicity <- ifelse(
   baseline$SDC_ETHN_ZH_COM == 1 |
     baseline$SDC_ETHN_SA_COM == 1 |
     baseline$SDC_ETHN_HE_COM == 1,
