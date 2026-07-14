@@ -7,8 +7,9 @@
 #     "25CA004_UdeM_AJTessier_FUP2"
 
 list.files("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline")
-baseline<- read.csv("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline/25CA004_UdeM_AJTessier_Baseline_CoPv7-1_Qx_PA_BS.csv")
+baseline <- read.csv("/project/def-ajtess/clsa_data/25CA004_UdeM_AJTessier_Baseline/25CA004_UdeM_AJTessier_Baseline_CoPv7-1_Qx_PA_BS.csv")
 View(baseline)
+dictionary <- read.csv2("~/thelo.projet1/projet1 - baseline_dictionary.csv")
 #–––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
 # ethnicity
@@ -34,7 +35,130 @@ baseline$alcool <- with(
     ALC_LQWE_NB_COM +
     ALC_OTWE_NB_COM
 )
+#–––––––––––––––––––––––––––––––––––––––––––––––––––––––
+# Nettoyage
+# 1. Créer la liste de toutes les variables à nettoyer
+variables_nutrition <- c(
+  "NUT_FBR_NB_COM", "NUT_BRD_NB_COM", "NUT_MEAT_NB_COM", "NUT_MTOT_NB_COM",
+  "NUT_CHCK_NB_COM", "NUT_FISH_NB_COM", "NUT_SASG_NB_COM", "NUT_PATE_NB_COM",
+  "NUT_SAUC_NB_COM", "NUT_O3EG_NB_COM", "NUT_EGGS_NB_COM", "NUT_LEGM_NB_COM",
+  "NUT_NUTS_NB_COM", "NUT_FRUT_NB_COM", "NUT_GREEN_NB_COM", "NUT_PTTO_NB_COM",
+  "NUT_FRIE_NB_COM", "NUT_CRRT_NB_COM", "NUT_VGOT_NB_COM", "NUT_LWCS_NB_COM",
+  "NUT_CHSE_NB_COM", "NUT_LWYG_NB_COM", "NUT_YOGR_NB_COM", "NUT_CALC_NB_COM",
+  "NUT_DAIR_NB_COM", "NUT_SALT_NB_COM", "NUT_DSRT_NB_COM", "NUT_CHOC_NB_COM",
+  "NUT_BTTR_NB_COM", "NUT_DRSG_NB_COM", "NUT_CAJC_NB_COM", "NUT_PURE_NB_COM",
+  "NUT_CAML_NB_COM", "NUT_WHML_NB_COM", "NUT_LFML_NB_COM", "NUT_CADR_NB_COM"
+)
 
+# 2. Appliquer le nettoyage automatiquement sur chaque colonne de 'baseline'
+for (var in variables_nutrition) {
+  baseline[[var]][baseline[[var]] %in% c(9998,9999,7777)] <- NA
+}
+for (var in variables_nutrition) {
+  baseline[[var]][baseline[[var]] == 9996] <- 0
+}
+#
+#
+# Pour remettre les variables sur une consommation par semaine
+# 3. Reconvertir les fréquences quotidiennes en fréquences hebdomadaires (multiplication par 7)
+for (var in variables_nutrition) {
+  baseline[[var]] <- baseline[[var]] * 7
+}
+#
+# Remplacer les valeurs aberrantes par NA
+# pour ne pas avoir par exemple 51 consommation de viande pas semaine
+seuil_max <- 28
+
+for (var in variables_nutrition) {
+  baseline[[var]][baseline[[var]] > seuil_max] <- NA
+}
+#
+#
+#
+# Rich-protein food frequency
+# Beef/Pork | Other meats | Chicken/Turkey | Fish | Omega-3 eggs | Eggs | Legumes | Nuts | Low-fat cheese | Regular cheese | Low-fat yogurt | Regular yogurt | Whole milk | Low-fat milk
+baseline$protein_score <- with(
+  baseline,
+  NUT_MEAT_NB_COM +
+    NUT_MTOT_NB_COM +
+    NUT_CHCK_NB_COM +
+    NUT_FISH_NB_COM +
+    NUT_O3EG_NB_COM +
+    NUT_EGGS_NB_COM +
+    NUT_LEGM_NB_COM +
+    NUT_NUTS_NB_COM +
+    NUT_LWCS_NB_COM +
+    NUT_CHSE_NB_COM +
+    NUT_LWYG_NB_COM +
+    NUT_YOGR_NB_COM +
+    NUT_WHML_NB_COM +
+    NUT_LFML_NB_COM
+  ,
+  na.rm = TRUE
+)
+# Animal Protein Food Frequency Score
+# Beef/Pork | Other meats | Chicken/Turkey | Fish | Processed meats | Omega-3 eggs | Eggs | Low-fat cheese | Regular cheese | Low-fat yogurt | Regular yogurt | Whole milk | Low-fat milk
+baseline$animalprotein_score <- with(
+  baseline,
+  NUT_MEAT_NB_COM +
+    NUT_MTOT_NB_COM +
+    NUT_CHCK_NB_COM +
+    NUT_FISH_NB_COM +
+    NUT_SASG_NB_COM +
+    NUT_O3EG_NB_COM +
+    NUT_EGGS_NB_COM +
+    NUT_LWCS_NB_COM +
+    NUT_CHSE_NB_COM +
+    NUT_LWYG_NB_COM +
+    NUT_YOGR_NB_COM +
+    NUT_WHML_NB_COM +
+    NUT_LFML_NB_COM
+  ,
+  na.rm = true
+)
+
+# Plant Protein Food Frequency Score
+# Legumes | Nuts, seeds and peanut butter
+baseline$plantprotein_score <- with(baseline,
+                                    NUT_LEGM_NB_COM +
+                                      NUT_NUTS_NB_COM, na.rm = TRUE)
+#
+# Healthy food frequency 
+# Whole-grain cereals | Whole-grain breads | Fruit | Green salad | Carrots | Other vegetables | Legumes | Nuts | Fish | 100% fruit juice
+baseline$healthydiet_score <- with(
+  baseline,
+  NUT_FBR_NB_COM +
+    NUT_BRD_NB_COM +
+    NUT_FRUT_NB_COM +
+    NUT_GREEN_NB_COM +
+    NUT_CRRT_NB_COM +
+    NUT_VGOT_NB_COM +
+    NUT_LEGM_NB_COM +
+    NUT_NUTS_NB_COM +
+    NUT_FISH_NB_COM +
+    NUT_PURE_NB_COM
+  ,
+  na.rm = TRUE
+)
+#
+# Unhealthy food frequency
+# Sausages/processed meats | Patés | French fries/poutine | Salty snacks | Pastries | Chocolate bars | Butter/regular margarine | Regular dressings/dips | Milk-based desserts
+baseline$unhealthydiet_score <- with(
+  baseline,
+  NUT_SASG_NB_COM +
+    NUT_PATE_NB_COM +
+    NUT_FRIE_NB_COM +
+    NUT_SALT_NB_COM +
+    NUT_DSRT_NB_COM +
+    NUT_CHOC_NB_COM +
+    NUT_BTTR_NB_COM +
+    NUT_DRSG_NB_COM +
+    NUT_DAIR_NB_COM
+  ,
+  na.rm = TRUE
+)
+#
+#
 #–––––––––––––––––––––––––––––––––––––––––––––––––––––––
 #### Faire la table 1 ####
 # 1. Installer et charger tableone (si pas encore fait)
