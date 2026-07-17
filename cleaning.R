@@ -833,6 +833,23 @@ baseline_dxa_valide %>%
 #
 #
 # ============================================================
+# CRÉATION DES VARIABLES WHOLE BODY DANS BASELINE_FINAL
+# ============================================================
+baseline_dxa_valide <- baseline_dxa_valide %>%
+  mutate(
+    total_mass_kg =
+      DXA_WBC_WBTOT_MASS_COM / 1000,
+    
+    total_fat_mass_kg =
+      DXA_WBC_WBTOT_FAT_COM / 1000,
+    
+    total_percent_fat =
+      DXA_WBC_WBTOT_PFAT_COM,
+    
+    total_lean_mass_kg =
+      DXA_WBC_WBTOT_LEAN_COM / 1000
+  )
+# ============================================================
 # 24. LISTE DES COVARIABLES REQUISES (non finale)
 # ============================================================
 #on regroupe les noms exacts des covariables et les variables dérivées nécessaires à ton analyse
@@ -846,10 +863,10 @@ variables_covariables <- c(
   "WHC_WAIST_CM_COM",
   
   # Composition corporelle DXA
-  "DXA_WBC_WBTOT_MASS_COM",
-  "DXA_WBC_WBTOT_FAT_COM",
-  "DXA_WBC_WBTOT_PFAT_COM",
-  "DXA_WBC_WBTOT_LEAN_COM",
+  "total_mass_kg",
+  "total_fat_mass_kg",
+  "total_percent_fat",
+  "total_lean_mass_kg",
   "ALM_kg",
   "ALMI_kg_m2",
   
@@ -983,10 +1000,10 @@ variables_covariables <- c(
   "WHC_WAIST_CM_COM",
   
   # Composition corporelle DXA
-  "DXA_WBC_WBTOT_MASS_COM",
-  "DXA_WBC_WBTOT_FAT_COM",
-  "DXA_WBC_WBTOT_PFAT_COM",
-  "DXA_WBC_WBTOT_LEAN_COM",
+  "total_mass_kg",
+  "total_fat_mass_kg",
+  "total_percent_fat",
+  "total_lean_mass_kg",
   "ALM_kg",
   "ALMI_kg_m2",
   
