@@ -833,7 +833,7 @@ baseline_dxa_valide %>%
 #
 #
 # ============================================================
-# CRÉATION DES VARIABLES WHOLE BODY DANS BASELINE_FINAL
+# CRÉATION DES VARIABLES WHOLE BODY
 # ============================================================
 baseline_dxa_valide <- baseline_dxa_valide %>%
   mutate(
@@ -1075,7 +1075,7 @@ baseline_dxa_valide %>%
     values_to = "n_manquant"
   ) %>%
   mutate(
-    pourcentage = 100 * n_manquant / 6539
+    pourcentage = 100 * n_manquant / sum(!baseline_dxa_valide$covariables_completes)
   ) %>%
   arrange(desc(n_manquant))
 #
