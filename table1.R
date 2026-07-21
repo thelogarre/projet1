@@ -2,6 +2,8 @@ install.packages("gtsummary")
 install.packages("gt")
 install.packages("dplyr")
 install.packages("broom")
+install.packages("writexl")
+library(writexl)
 library(broom)
 library(gtsummary)
 library(gt)
@@ -58,12 +60,16 @@ baseline_final <- baseline_final %>%
     # --------------------------------------------------------
     obesity = case_when(
       SEX_ASK_COM == "M" &
-        HWT_DBMI_COM > 30 &
-        WHC_WAIST_CM_COM > 102 ~ TRUE,
+        HWT_DBMI_COM > 30 
+      #&
+       # WHC_WAIST_CM_COM > 102 
+        ~ TRUE,
       
       SEX_ASK_COM == "F" &
-        HWT_DBMI_COM > 30 &
-        WHC_WAIST_CM_COM > 88 ~ TRUE,
+        HWT_DBMI_COM > 30 
+      #&
+       # WHC_WAIST_CM_COM > 88 
+      ~ TRUE,
       
       SEX_ASK_COM %in% c("M", "F") ~ FALSE,
       
@@ -463,3 +469,20 @@ table1_combine <- tbl_stack(
 )
 
 table1_combine
+
+
+#–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+#exporter le tableau en excel
+table1_hommes_df <- table1_hommes %>%
+  as_tibble()
+
+table1_femmes_df <- table1_femmes %>%
+  as_tibble()
+
+write_xlsx(
+  list(
+    Hommes = table1_hommes_df,
+    Femmes = table1_femmes_df
+  ),
+  path = "Tableau_1_groupes_cliniques.xlsx"
+)
